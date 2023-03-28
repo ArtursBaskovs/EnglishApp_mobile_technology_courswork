@@ -1,0 +1,21 @@
+dataCollection
+      .add(
+       {    eng: "What is black and white and red all over?",    lv: "Newspaper"  }
+      );
+            dataCollection
+      .add(
+       {    eng: "What is always in front of you but can't be seen?",    lv: "Future"  }
+      );
+            dataCollection
+      .add(
+       {    eng: "What has a head and a tail but no body?",    lv: "Coin"  }
+      );
+            dataCollection
+      .add(
+      {    eng: "What can you catch but not throw?",    lv: "Cold"  }
+      );
+            dataCollection
+      .add(
+        {    eng: "What has a thumb and four fingers but is not alive?",    lv: "Glove"  }
+      );
+      

@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import db from '../db/firestore';
+
 
 import { useRoute } from '@react-navigation/native';
 //import { useNavigation } from '@react-navigation/native';
@@ -35,8 +35,9 @@ const TaskComponent = ({navigation}) => {
 
     const [elementColor, setElementColor] = useState('hsl(276, 42%, 33%)');
 
-    let collectionFromDB = '';
+    //change it. create data in json file and write code below to retriev
     useEffect( ()=>{
+      //get page info to decide which task is required
       let whichTask = routePassedData.params?.taskT;
       if(whichTask == 'words') {
         collectionFromDB = 'englishApp_tasks';
@@ -44,27 +45,8 @@ const TaskComponent = ({navigation}) => {
       if(whichTask == 'riddles'){
         collectionFromDB = 'englishApp_riddles';
       }
-      console.log(collectionFromDB);
-      const dataCollection = db.collection(collectionFromDB)
-      
-
-
-        const collectInJSON = dataCollection.onSnapshot((querySnapshot) => {
-          const docsFromFirebase = [];
-          let index = 0
-          querySnapshot.forEach((doc) => {
-            docsFromFirebase[index] = doc.data();
-            index++;
-          });
-          console.log(docsFromFirebase)
-          setDocuments(docsFromFirebase);
-        });
-
-
-
-        console.log('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
         return () => {
-          collectInJSON();
+          //I should return json data here I gues
         };
     }, [])
     

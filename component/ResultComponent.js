@@ -1,7 +1,5 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-//import db from '../db/firestore';
-//import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 
 

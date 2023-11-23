@@ -1,9 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-
-
 import { useRoute } from '@react-navigation/native';
 //import { useNavigation } from '@react-navigation/native';
+import { getList } from '../firebaseConfig';
 
 
 
@@ -35,21 +34,34 @@ const TaskComponent = ({navigation}) => {
 
     const [elementColor, setElementColor] = useState('hsl(276, 42%, 33%)');
 
-    //change it. create data in json file and write code below to retriev
     useEffect( ()=>{
       //get page info to decide which task is required
       let whichTask = routePassedData.params?.taskT;
+      let collectionToGet = 'none';
+      let listOfTasks = [];
       if(whichTask == 'words') {
-        collectionFromDB = 'englishApp_tasks';
+        collectionToGet = 'englishApp_tasks';
       }
       if(whichTask == 'riddles'){
-        collectionFromDB = 'englishApp_riddles';
+        collectionToGet = 'englishApp_riddles';
       }
+
+
+      //set array to documents only when promise of getting data from firebase ir resolved
+      listOfTasks = getList(collectionToGet).then((data)=> {
+        setDocuments(data);
+        console.log(data)
+      }).catch((error) => {
+        console.error('Error fetching data:', error);
+      });
         return () => {
-          //I should return json data here I gues
+        
+          
         };
     }, [])
-    
+ 
+
+
   //
   let endThis = false;
   const [end, setEnd] = useState(false);
@@ -57,6 +69,7 @@ const TaskComponent = ({navigation}) => {
   if(documents != null){
     docLength = Object.keys(documents).length;
   } 
+  
   useEffect(() => {
     if(documents != null) {
 
@@ -91,11 +104,6 @@ const TaskComponent = ({navigation}) => {
       //setTaskType(documents[randomIndex].taskType);
       addUsedIndex(randomIndex);
       
-    }
-    
-    return () => {
-      setWord('n');
-      console.log("values given")
     }
   }, [documents, update])
   

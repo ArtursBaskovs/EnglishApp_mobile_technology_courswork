@@ -3,62 +3,64 @@ import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 //import { useNavigation } from '@react-navigation/native';
 import { getList } from '../firebaseConfig';
+//import RNLog from 'react-native-log';
+import { log } from '../logger';
 
 
 
 const TaskComponent = ({navigation}) => {
- 
+
+  const [documents, setDocuments] = useState(null);
+
+  const [inputValue, setInputValue] = useState(null);
+
+  const [update, setUpdate] = useState(false);
+
+  const [usedIndexes, setUsedIndexes] = useState([]);
+
+  const [score, setScore] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  const [word, setWord] = useState('');
+  //let rightAnswer = '';
+  const [rightAnswer, setRightAnswer] = useState('');
+  let randomIndex = 0;
+  let c = 33;
+  const [taskType, setTaskType] = useState('');
+  //let taskType = '';
+  const routePassedData = useRoute();
+
+  const [elementColor, setElementColor] = useState('hsl(276, 42%, 33%)');
+
+  useEffect( ()=>{
+    //get page info to decide which task is required
+    let whichTask = routePassedData.params?.taskT;
+    let collectionToGet = 'none';
+    let listOfTasks = [];
+    if(whichTask == 'words') {
+      log("info", "Retrieving data from englishApp_tasks collection");
+      collectionToGet = 'englishApp_tasks';
+    }
+    if(whichTask == 'riddles'){
+      log("info", "Retrieving data from englishApp_riddles collection");
+      collectionToGet = 'englishApp_riddles';
+    }
 
 
-
-    //const navigation = useNavigation();
-
-    const [documents, setDocuments] = useState(null);
-
-    const [inputValue, setInputValue] = useState(null);
-
-    const [update, setUpdate] = useState(false);
-
-    const [usedIndexes, setUsedIndexes] = useState([]);
-
-    const [score, setScore] = useState(0);
-    const [wrongCount, setWrongCount] = useState(0);
-    const [word, setWord] = useState('');
-    //let rightAnswer = '';
-    const [rightAnswer, setRightAnswer] = useState('');
-    let randomIndex = 0;
-    let c = 33;
-    const [taskType, setTaskType] = useState('');
-    //let taskType = '';
-    const routePassedData = useRoute();
-
-    const [elementColor, setElementColor] = useState('hsl(276, 42%, 33%)');
-
-    useEffect( ()=>{
-      //get page info to decide which task is required
-      let whichTask = routePassedData.params?.taskT;
-      let collectionToGet = 'none';
-      let listOfTasks = [];
-      if(whichTask == 'words') {
-        collectionToGet = 'englishApp_tasks';
-      }
-      if(whichTask == 'riddles'){
-        collectionToGet = 'englishApp_riddles';
-      }
-
-
-      //set array to documents only when promise of getting data from firebase ir resolved
-      listOfTasks = getList(collectionToGet).then((data)=> {
-        setDocuments(data);
-        console.log(data)
-      }).catch((error) => {
-        console.error('Error fetching data:', error);
-      });
-        return () => {
+    //set array to documents only when promise of getting data from firebase ir resolved
+    log("info", "Getting data from firebase.");
+    listOfTasks = getList(collectionToGet).then((data)=> {
+      setDocuments(data);
+      console.log(data);
+      log("info", "Getting data from firebase resolved.");
+    }).catch((error) => {
+      console.error('Error fetching data:', error);
+      log("error", "Error fetching data");
+    });
+      return () => {
+      
         
-          
-        };
-    }, [])
+      };
+  }, [])
  
 
 
@@ -77,20 +79,17 @@ const TaskComponent = ({navigation}) => {
       let i = 0;
       
       while (true){
-      //console.log(i);
+        
         if(!usedIndexes.includes(randomIndex)){
           break;
         }
         
         randomIndex = Math.floor(Math.random() * documents.length);
         if(documents.length < i){
-          //console.log(documents.length + 'Loooooool' + i);
           return () => {
-            console.log("Run out of tasks");
-
-  
+            log("error", "Run out of tasks");
           }
-          //break;
+          
         }
 
         i++;
@@ -98,10 +97,9 @@ const TaskComponent = ({navigation}) => {
 
       
       
-      console.log(documents[randomIndex])
+      //set info showing on page
       setWord(documents[randomIndex].eng);
       setRightAnswer(documents[randomIndex].lv);
-      //setTaskType(documents[randomIndex].taskType);
       addUsedIndex(randomIndex);
       
     }
@@ -110,7 +108,7 @@ const TaskComponent = ({navigation}) => {
 
   //when there are no tasks left, do the thing
   if(word == 'n'){
-    console.log('kaput');
+    log("info", "Task finished. Redirecting to result page");
     navigation.navigate('Results', { Score: score, WrongCount: wrongCount, totalPossible: docLength});     
     
   }
@@ -121,13 +119,6 @@ const TaskComponent = ({navigation}) => {
   const handleInputChange = (text) => {
     setInputValue(text);
   }
-  
-  
-
-
-
-
-  
   
   useEffect(() => {
     console.log("SCORE: " + score);
@@ -163,6 +154,7 @@ const TaskComponent = ({navigation}) => {
   const addUsedIndex = (index) => {
     setUsedIndexes([...usedIndexes, index]);
     console.log("index added");
+    log("info", "Task added to list of used tasks.");
   }
 
 

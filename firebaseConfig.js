@@ -1,5 +1,7 @@
-
 import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, collection, getDocs, addDoc } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAWwO-y0UcgoURFhz2D7cEAbu50O5HFp7w",
@@ -12,3 +14,26 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export async function getList(whichCollection) {
+  const tasksCol = collection(db, whichCollection);
+  const taskSnapshot = await getDocs(tasksCol);
+  const taskList = taskSnapshot.docs.map(doc => doc.data());
+  return taskList;
+}
+
+export const writeDataToBD = async (collectionName, lv, eng) => {
+  try{
+    //firebase function to add new document to collection in DB
+    const docRef = await addDoc(collection(db, collectionName), {
+      lv: lv,
+      eng: eng
+    });
+    console.log("New document added with ID: ", docRef.id);
+  } catch (e) {
+    console.log("Error when adding document: ", e)
+  }
+
+}
+
